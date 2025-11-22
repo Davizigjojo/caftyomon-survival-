@@ -2,7 +2,7 @@
       "relation": ["delegate_permission/common.handle_all_urls"],
       "target": {
         "namespace": "android_app",
-        "package_name": "io.github.mochijapan.twa",
-        "sha256_cert_fingerprints": ["EB:1B:39:C8:FE:A2:4D:E4:3E:BE:31:D5:A1:CD:7B:C2:88:08:F3:6F:5C:9D:28:E0:4B:71:A0:B2:92:CE:EC:43"]
+        "package_name": "io.github.davizigjojo.twa",
+        "sha256_cert_fingerprints": ["90:93:7A:85:1E:70:5E:05:8C:70:0F:C4:06:55:B8:1A:0D:0F:EF:1B:BE:2C:98:59:7B:D8:F7:DE:09:71:0C:43"]
       }
     }]
