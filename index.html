@@ -2,7 +2,8 @@
 <html lang="pt-BR">
 <head>
   
-  <meta charset="UTF-8"> <title>Servidor de Sobrevivência Craftymon</title>
+  <meta charset="UTF-8"> 
+  <title>Servidor de Sobrevivência Craftymon</title>
   
   <link rel="manifest" href="manifest.json">
   
@@ -145,6 +146,29 @@ h2 {
   background-color: #00996a;
 }
 
+/* NOVO ESTILO PARA O BOTÃO DO JOGO */
+.game-btn {
+    background-color: #ff4500; /* Laranja forte */
+    border: 2px solid #ffaa00;
+    padding: 15px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 10px;
+    box-shadow: 0 4px #cc3700;
+    transition: all 0.1s;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 15px;
+}
+
+.game-btn:active {
+    box-shadow: 0 1px #cc3700;
+    transform: translateY(3px);
+}
+
+
 /* TRANSLATE */
 .translate-container {
   margin-top: 15px;
@@ -192,7 +216,7 @@ footer {
         <button id="close-menu-btn" style="position: absolute; right: 20px; top: 20px; font-size: 20px; background: none; border: 2px solid #00ff99; color: #00ff99; padding: 5px 10px; border-radius: 8px; cursor: pointer; transition: 0.3s;">X</button>
         
         <a href="index.html">🏠 Início</a>
-        <a href="#rules-box">📜 Regras</a> 
+        <a href="#game-box">🎮 Jogo</a> <a href="#rules-box">📜 Regras</a> 
         <a href="#guia-rapido">⚙️ Como Funciona</a> 
         <a href="#adms-box">👨‍💻 ADMs</a> 
         <a href="#creditos">💖 Créditos</a>
@@ -210,38 +234,44 @@ footer {
         <option value="es">Español 🇪🇸</option>
       </select>
     </div>
-  </header>
+</header>
   
-  <div style="height: 15px;"></div> 
+<div style="height: 15px;"></div> 
   
-  <section>
+<section id="game-box">
+    <h2>👾 Jogue Nosso Minigame!</h2>
+    <p>Teste suas habilidades no <b>Geometry Dash Python Edition</b>, feito com Pygame!</p>
+    <a href="game.html" class="game-btn">🕹️ JOGAR AGORA!</a>
+</section>
+
+<section>
     <h2>🎮 IP e Porta</h2>
     <p><b>IP:</b> Craftymon_Survival.aternos.me</p>
     <p><b>Porta:</b> 38606</p>
     <button class="copy-btn" onclick="copyText('Craftymon_Survival.aternos.me')">Copiar IP</button>
     <button class="copy-btn" onclick="window.location.href='minecraft://?addExternalServer=Craftymon_Survival|Craftymon_Survival.aternos.me:38606'">Conectar</button>
-  </section>
+</section>
 
-  <section>
+<section>
     <h2>🏆 TOP 3 Jogadores</h2>
     <div class="player">🥇 ???</div>
     <div class="player">🥈 ???</div>
     <div class="player">🥉 ???</div>
-  </section>
+</section>
 
-  <section id="adms-box">
+<section id="adms-box">
     <h2>👨‍💻 ADMs do servidor</h2>
     <div class="player">Davizig10jojo</div>
     <div class="player">FaHerobrine</div>
     <div class="player">???</div>
-  </section>
+</section>
   
-  <section>
+<section>
     <h2>📣 Sobre o servidor</h2>
     <p>Temos addons como o <b>Pokedrock</b> e <b>Essentials</b> (o da bússola 🧭), entre outros!</p>
-  </section>
+</section>
 
-  <section id="guia-rapido">
+<section id="guia-rapido">
     <h2>⚙️ Guia Rápido</h2>
 
     <div class="player">
@@ -263,25 +293,25 @@ footer {
       <b>4. Qual o propósito do server?</b>
       <p>o server tem o propósito de jogar com amigos ou conhecer amigos para quem joga sozinho o server tem cada proposta inovadora, como este site como os addons como a gameplay tudo é único, como todos os servers são cada um com uma proposta diferente cada um com um estilo...</p>
     
-  </section>
-  <section id="creditos">
+</section>
+<section id="creditos">
     <h2>💖 Créditos</h2>
     <p>Um agradecimento especial a quem ajudou:</p>
     <div class="player">Base do site:Gemini</div>
     <div class="player">reformulou o site:RougeEdits</div>
     <div class="player">fez modificações:Davizig10jojo (criador Da C.S.S)</div>
-  </section> 
+</section> 
   
-  <section id="rules-box">
+<section id="rules-box">
     <h2>Diretrizes Essenciais</h2>
     <p>Siga as regras para continuar participando no server</p>
      <div>Não pratique spam ou floods (envio repetitivo e excessivo de mensagens).</div>
      <div>Não utilize qualquer tipo de software ou modificação de jogo (hack) que lhe dê vantagem injusta.</div>
      <div>Mantenha o respeito! Não humilhe, ofenda ou use linguagem de ódio contra outras pessoas, tanto no Minecraft quanto no Discord.</div>
      <div>Siga as regras específicas do servidor do Minecraft, se houverem, além destas regras gerais.</div>
-  </section> 
+</section> 
   
-  <section id="avaliar-site">
+<section id="avaliar-site">
     <h2>Avalie o Nosso Site! ⭐</h2>
     <p>O que você achou da nossa página?</p>
     
@@ -296,10 +326,11 @@ footer {
     <p id="rating-message" style="font-size: 10px; color: #00ff99; margin-top: 10px;">Clique nas estrelas para nos dar uma nota!</p>
 
     <button class="copy-btn" onclick="openFeedbackForm()">Deixe um Comentário</button>
-  </section>
-  <footer> 
+</section>
+
+<footer> 
     <p>© 2025 Craftymon Survival Server | Todos os direitos reservados</p>
-  </footer>
+</footer>
 
 <script>
   // --- LÓGICA DO MENU HAMBÚRGUER ---
@@ -358,8 +389,6 @@ footer {
 
   // 3. Função que lida com a mudança de idioma no seu dropdown
   function translatePage(lang) {
-    // CORREÇÃO FINAL: Usamos a forma mais simples do cookie. 
-    // Em alguns ambientes (como o Aternos), adicionar 'expires' e 'path' pode causar bloqueio.
     document.cookie = `googtrans=/pt/${lang}`;
 
     // Recarrega a página para aplicar a nova tradução
