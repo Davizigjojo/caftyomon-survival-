@@ -70,16 +70,21 @@
             [[interpreters]]
             src = "https://pyscript.net/releases/2024.1.1/micropython-main.wasm"
             name = "mpy"
+
+            </py-config>
             
-            [[runtimes]]
-            # ESSENCIAL PARA O PYGAME: Carrega o ambiente de execução do Pygame.
-            src = "https://cdn.jsdelivr.net/npm/pygame-web@0.1.0/micropython/mp_pygame.wasm"
-            name = "mp_pygame"
-            interpreter = "mpy"
-        </py-config>
+<py-config>
+    [[runtimes]]
+    # ESTA CONFIGURAÇÃO DEVE EXISTIR
+    src = "https://cdn.jsdelivr.net/npm/pygame-web@0.1.0/micropython/mp_pygame.wasm"
+    name = "mp_pygame"
+    interpreter = "mpy"
+</py-config>
+            
         
-        <py-script src="Geometry_Dash_Python_Edition.py" runtime="mp_pygame">
-        </py-script>
+        <py-script src="Geometry_Dash_Python_Edition.py" **runtime="mp_pygame"**>
+</py-script>
+        
 
     </div>
 </body>
