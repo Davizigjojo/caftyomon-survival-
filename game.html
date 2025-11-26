@@ -7,44 +7,7 @@
     <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css" />
     <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
 
-    <style>
-        body {
-            background-color: #1a1a1a;
-            color: white;
-            text-align: center;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-        
-        #py-terminal {
-            display: none !important;
-        }
-
-        #game-container {
-            max-width: 800px; 
-            margin: 20px auto;
-            border: 5px solid #00ff99;
-            box-shadow: 0 0 20px rgba(0,255,153,0.5);
-        }
-        
-        h1 {
-            color: #00ff99;
-            font-size: 24px;
-        }
-        
-        .back-link {
-            display: block;
-            margin-top: 20px;
-            color: #00ff99;
-            text-decoration: none;
-            font-size: 16px;
-        }
-        .back-link:hover {
-            text-decoration: underline;
-        }
-    </style>
-</head>
+    </head>
 <body>
     <h1>Geometry Dash Python Edition!</h1>
     
@@ -53,10 +16,8 @@
     <div id="game-container">
         <py-config>
             [[fetch]]
-            # Lista de todos os arquivos de recurso que o PyScript deve baixar antes de rodar o jogo
             files = [
-                "geometry_dash_python_edition.py",
-                "Bloco.png",
+                "Geometry_Dash_Python_Edition.py", "Bloco.png",
                 "death.wav",
                 "jump.wav",
                 "mini-spike.png",
@@ -70,7 +31,7 @@
             name = "mpy"
             
             [[runtimes]]
-            # Usa o runtime do Pygame-Web
+            # ESSENCIAL PARA O PYGAME!
             src = "https://cdn.jsdelivr.net/npm/pygame-web@0.1.0/micropython/mp_pygame.wasm"
             name = "mp_pygame"
             interpreter = "mpy"
