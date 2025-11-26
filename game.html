@@ -23,12 +23,11 @@
         }
 
         #game-container {
-            /* Define o tamanho da tela do jogo (800x400) */
+            /* Define o tamanho da tela do jogo (800x400) e borda */
             max-width: 800px; 
             margin: 20px auto;
             border: 5px solid #00ff99;
             box-shadow: 0 0 20px rgba(0,255,153,0.5);
-            /* Opcional: Garante que o canvas seja o único item */
             display: inline-block; 
         }
         
@@ -73,14 +72,14 @@
             name = "mpy"
             
             [[runtimes]]
-            # ESTA LINHA É ESSENCIAL para carregar o Pygame e evitar o erro "ModuleNotFoundError"
+            # ESSENCIAL PARA O PYGAME: Carrega o ambiente de execução do Pygame.
             src = "https://cdn.jsdelivr.net/npm/pygame-web@0.1.0/micropython/mp_pygame.wasm"
             name = "mp_pygame"
             interpreter = "mpy"
         </py-config>
         
         <py-script src="Geometry_Dash_Python_Edition.py" runtime="mp_pygame">
-            </py-script>
+        </py-script>
 
     </div>
 </body>
