@@ -1,6 +1,18 @@
 import pygame
 import random
 import os
+import sys
+
+# --- ADAPTAÇÃO PARA PYGAME-WEB/PYSCRIPT ---
+# Importa o módulo sys para detectar o ambiente e as funções JS
+if 'pyodide' in sys.modules:
+    from js import console
+    def print_log(*args):
+        console.log(*args)
+else:
+    def print_log(*args):
+        print(*args)
+# --- FIM DA ADAPTAÇÃO ---
 
 pygame.init()
 WIDTH, HEIGHT = 800, 400
@@ -12,86 +24,97 @@ DEBUG_HITBOX = False
 GROUND_Y = HEIGHT - 80        
 PLAYER_Y_ON_GROUND = GROUND_Y - 16 
 
-BASE_PATH = "/storage/emulated/0/Pydroid3/files/my_scripts/"  # Troque para o seu caminho desejado
+# REMOVIDO: BASE_PATH não é mais necessário, PyScript carrega os arquivos
+# diretamente pelo nome (ex: "jump.wav") na mesma pasta.
 
 # Inicializa o mixer (áudio)
 try:
     pygame.mixer.init()
 except Exception as mixer_err:
-    print("Erro ao iniciar o mixer:", mixer_err)
+    print_log("Erro ao iniciar o mixer:", mixer_err) # Alterado para print_log
 
 def load_sound(filename):
-    path = os.path.join(BASE_PATH, filename)
+    # O caminho é apenas o nome do arquivo
     try:
-        return pygame.mixer.Sound(path)
+        return pygame.mixer.Sound(filename)
     except Exception as e:
-        print(f"Erro ao carregar '{filename}': {e}")
+        print_log(f"Erro ao carregar '{filename}': {e}")
         return None
 
 def load_music(filename):
-    path = os.path.join(BASE_PATH, filename)
+    # O caminho é apenas o nome do arquivo
     try:
-        pygame.mixer.music.load(path)
+        pygame.mixer.music.load(filename)
         return True
     except Exception as e:
-        print(f"Erro ao carregar música '{filename}': {e}")
+        print_log(f"Erro ao carregar música '{filename}': {e}")
         return False
 
 jump_sound = load_sound("jump.wav")
 death_sound = load_sound("death.wav")
 
 def start_music():
-    if load_music("music.wav"):
+    if load_music("music.wav"): # Corrigido para music.wav (o arquivo enviado)
         pygame.mixer.music.play(-1)
     else:
-        print("Coloque um 'music.mp3' na pasta correta!")
+        print_log("Coloque um 'music.wav' na pasta correta!") # Alterado para print_log e .wav
 
 # Inicia música só uma vez!
 start_music()
 
-def find_sprite_name(names):
-    for name in names:
-        if os.path.isfile(os.path.join(BASE_PATH, name)):
-            return name
-    return None
-
-cube_names = ["cube.png", "cubo.png", "player.png"]
-spike_names = ["spike.png", "espinho.png", "spike16.png"]
-mini_names = ["mini_spike.png", "mini-spike.png", "espinho_pequeno.png"]
-
-cube_file = find_sprite_name(cube_names)
-spike_file = find_sprite_name(spike_names)
-mini_file = find_sprite_name(mini_names)
+# REMOVIDO: find_sprite_name (dependia de os.path.isfile)
+# Carregamento de sprites DIRETO, usando os nomes de arquivo que você enviou:
 
 def load_image(name, size=None):
     try:
-        img = pygame.image.load(os.path.join(BASE_PATH, name)).convert_alpha()
+        # O caminho é apenas o nome do arquivo
+        img = pygame.image.load(name).convert_alpha()
         if size:
-            img = pygame.transform.smoothscale(img, size)
+            # Usando transform.scale em vez de smoothscale (mais seguro no Pygame-Web)
+            img = pygame.transform.scale(img, size) 
         return img
     except Exception as img_err:
-        print(f"Erro ao carregar imagem '{name}':", img_err)
+        print_log(f"Erro ao carregar imagem '{name}':", img_err)
         return None
 
-cube_img = load_image(cube_file, (32, 32)) if cube_file else None
-spike_img = load_image(spike_file, (32, 32)) if spike_file else None
-mini_img = load_image(mini_file, (32, 16)) if mini_file else None
+# Carregamento direto usando os nomes dos arquivos PNG que você enviou
+cube_img = load_image("player.png", (32, 32))
+spike_img = load_image("spike.png", (32, 32))
+mini_img = load_image("mini-spike.png", (32, 16))
 
-# RECORDES
-RECORD_FILE = os.path.join(BASE_PATH, "highscore.txt")
+# --- ADAPTAÇÃO: SALVAMENTO DE RECORDE (LOCALSTORAGE) ---
+# O recorde agora será salvo diretamente no navegador do jogador.
 def save_high_score(score):
-    try:
-        with open(RECORD_FILE, "w") as f:
-            f.write(str(score))
-    except:
-        pass
+    if 'pyodide' in sys.modules:
+        try:
+            from js import localStorage
+            localStorage.setItem("gd_highscore", str(score))
+        except:
+            print_log("Erro ao salvar recorde no localStorage.")
+    else:
+        # Lógica de arquivo para desktop (fallback, se rodar fora do navegador)
+        try:
+            with open("highscore.txt", "w") as f:
+                f.write(str(score))
+        except:
+            pass
 
 def load_high_score():
-    try:
-        with open(RECORD_FILE, "r") as f:
-            return int(f.read())
-    except:
-        return 0
+    if 'pyodide' in sys.modules:
+        try:
+            from js import localStorage
+            score_str = localStorage.getItem("gd_highscore")
+            return int(score_str) if score_str else 0
+        except:
+            return 0
+    else:
+        # Lógica de arquivo para desktop (fallback)
+        try:
+            with open("highscore.txt", "r") as f:
+                return int(f.read())
+        except:
+            return 0
+# --- FIM DA ADAPTAÇÃO: SALVAMENTO DE RECORDE ---
 
 class Player:
     def __init__(self):
@@ -233,8 +256,13 @@ def menu(high_score):
             if e.type == pygame.QUIT:
                 pygame.quit()
                 return False
+            # Verifica eventos de toque (MOUSEBUTTONDOWN) ou teclado
             if e.type == pygame.MOUSEBUTTONDOWN or (e.type == pygame.KEYDOWN and e.key in (pygame.K_SPACE, pygame.K_UP)):
                 return True
+            # Permite fechar a janela do navegador
+            if e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE:
+                pygame.quit()
+                return False
 
 def pause():
     paused = True
@@ -245,7 +273,8 @@ def pause():
         for e in pygame.event.get():
             if e.type == pygame.QUIT:
                 pygame.quit()
-                exit()
+                # Não precisa de exit(), apenas retorna para o navegador
+                return
             if e.type == pygame.KEYDOWN and e.key == pygame.K_p:
                 paused = False
 
@@ -258,28 +287,29 @@ speed = 5
 dead = False
 paused = False
 
+# Chamada do menu
 if not menu(high_score):
     pygame.quit()
-    exit()
+    # Não usa exit() para evitar travamentos no navegador
+    sys.exit(0) # Permite que o PyScript encerre
 
 while True:
     for e in pygame.event.get():
         if e.type == pygame.QUIT:
             pygame.quit()
-            exit()
+            sys.exit(0)
         if e.type == pygame.MOUSEBUTTONDOWN or (e.type == pygame.KEYDOWN and e.key in (pygame.K_SPACE, pygame.K_UP)):
             if not dead:
                 player.jump()
             else:
                 score = reset(player, obstacles)
                 dead = False
-                # Ao reviver, reinicia a música!
                 start_music()
         if e.type == pygame.KEYDOWN and e.key == pygame.K_p:
             pause()
         if e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE:
             pygame.quit()
-            exit()
+            sys.exit(0)
 
     cor_base = 60 + (score*3 % 120)
     screen.fill((cor_base, 60, 80))
@@ -301,7 +331,6 @@ while True:
             o.update(speed)
             if o.hitbox().colliderect(player.hitbox()):
                 dead = True
-                # Para música e toca som de morte!
                 pygame.mixer.music.stop()
                 if death_sound: death_sound.play()
                 if score > high_score:
@@ -320,3 +349,4 @@ while True:
 
     pygame.display.update()
     clock.tick(60)
+            
