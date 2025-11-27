@@ -2,9 +2,7 @@ import pygame
 import random
 import os
 import sys
-
-# --- ADAPTAÇÃO PARA PYGAME-WEB/PYSCRIPT ---
-# Importa o módulo sys para detectar o ambiente e as funções JS
+# Importa módulos JS para comunicação com o navegador (necessário para high score)
 if 'pyodide' in sys.modules:
     from js import console
     def print_log(*args):
@@ -12,7 +10,6 @@ if 'pyodide' in sys.modules:
 else:
     def print_log(*args):
         print(*args)
-# --- FIM DA ADAPTAÇÃO ---
 
 pygame.init()
 WIDTH, HEIGHT = 800, 400
@@ -24,17 +21,16 @@ DEBUG_HITBOX = False
 GROUND_Y = HEIGHT - 80        
 PLAYER_Y_ON_GROUND = GROUND_Y - 16 
 
-# REMOVIDO: BASE_PATH não é mais necessário, PyScript carrega os arquivos
-# diretamente pelo nome (ex: "jump.wav") na mesma pasta.
+# LINHA BASE_PATH REMOVIDA PARA AMBIENTE WEB
 
 # Inicializa o mixer (áudio)
 try:
     pygame.mixer.init()
 except Exception as mixer_err:
-    print_log("Erro ao iniciar o mixer:", mixer_err) # Alterado para print_log
+    print_log("Erro ao iniciar o mixer:", mixer_err)
 
 def load_sound(filename):
-    # O caminho é apenas o nome do arquivo
+    # CARREGAMENTO DIRETO PELO NOME
     try:
         return pygame.mixer.Sound(filename)
     except Exception as e:
@@ -42,7 +38,7 @@ def load_sound(filename):
         return None
 
 def load_music(filename):
-    # O caminho é apenas o nome do arquivo
+    # CARREGAMENTO DIRETO PELO NOME
     try:
         pygame.mixer.music.load(filename)
         return True
@@ -54,36 +50,36 @@ jump_sound = load_sound("jump.wav")
 death_sound = load_sound("death.wav")
 
 def start_music():
-    if load_music("music.wav"): # Corrigido para music.wav (o arquivo enviado)
+    if load_music("music.wav"): # Usando music.wav
         pygame.mixer.music.play(-1)
     else:
-        print_log("Coloque um 'music.wav' na pasta correta!") # Alterado para print_log e .wav
+        print_log("Coloque um 'music.wav' na pasta correta!")
 
 # Inicia música só uma vez!
 start_music()
 
-# REMOVIDO: find_sprite_name (dependia de os.path.isfile)
-# Carregamento de sprites DIRETO, usando os nomes de arquivo que você enviou:
+# DEFINIÇÃO DOS NOMES DE ARQUIVO USADOS (sem buscar no sistema de arquivos)
+cube_file = "player.png"
+spike_file = "spike.png"
+mini_file = "mini-spike.png"
 
 def load_image(name, size=None):
     try:
-        # O caminho é apenas o nome do arquivo
+        # CARREGAMENTO DIRETO PELO NOME
         img = pygame.image.load(name).convert_alpha()
         if size:
-            # Usando transform.scale em vez de smoothscale (mais seguro no Pygame-Web)
+            # transform.scale usado em vez de smoothscale (compatibilidade com Pygame-Web)
             img = pygame.transform.scale(img, size) 
         return img
     except Exception as img_err:
         print_log(f"Erro ao carregar imagem '{name}':", img_err)
         return None
 
-# Carregamento direto usando os nomes dos arquivos PNG que você enviou
-cube_img = load_image("player.png", (32, 32))
-spike_img = load_image("spike.png", (32, 32))
-mini_img = load_image("mini-spike.png", (32, 16))
+cube_img = load_image(cube_file, (32, 32))
+spike_img = load_image(spike_file, (32, 32))
+mini_img = load_image(mini_file, (32, 16))
 
 # --- ADAPTAÇÃO: SALVAMENTO DE RECORDE (LOCALSTORAGE) ---
-# O recorde agora será salvo diretamente no navegador do jogador.
 def save_high_score(score):
     if 'pyodide' in sys.modules:
         try:
@@ -91,13 +87,6 @@ def save_high_score(score):
             localStorage.setItem("gd_highscore", str(score))
         except:
             print_log("Erro ao salvar recorde no localStorage.")
-    else:
-        # Lógica de arquivo para desktop (fallback, se rodar fora do navegador)
-        try:
-            with open("highscore.txt", "w") as f:
-                f.write(str(score))
-        except:
-            pass
 
 def load_high_score():
     if 'pyodide' in sys.modules:
@@ -107,14 +96,9 @@ def load_high_score():
             return int(score_str) if score_str else 0
         except:
             return 0
-    else:
-        # Lógica de arquivo para desktop (fallback)
-        try:
-            with open("highscore.txt", "r") as f:
-                return int(f.read())
-        except:
-            return 0
+    return 0
 # --- FIM DA ADAPTAÇÃO: SALVAMENTO DE RECORDE ---
+
 
 class Player:
     def __init__(self):
@@ -256,10 +240,8 @@ def menu(high_score):
             if e.type == pygame.QUIT:
                 pygame.quit()
                 return False
-            # Verifica eventos de toque (MOUSEBUTTONDOWN) ou teclado
             if e.type == pygame.MOUSEBUTTONDOWN or (e.type == pygame.KEYDOWN and e.key in (pygame.K_SPACE, pygame.K_UP)):
                 return True
-            # Permite fechar a janela do navegador
             if e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE:
                 pygame.quit()
                 return False
@@ -273,8 +255,7 @@ def pause():
         for e in pygame.event.get():
             if e.type == pygame.QUIT:
                 pygame.quit()
-                # Não precisa de exit(), apenas retorna para o navegador
-                return
+                sys.exit(0)
             if e.type == pygame.KEYDOWN and e.key == pygame.K_p:
                 paused = False
 
@@ -287,11 +268,9 @@ speed = 5
 dead = False
 paused = False
 
-# Chamada do menu
 if not menu(high_score):
     pygame.quit()
-    # Não usa exit() para evitar travamentos no navegador
-    sys.exit(0) # Permite que o PyScript encerre
+    sys.exit(0)
 
 while True:
     for e in pygame.event.get():
